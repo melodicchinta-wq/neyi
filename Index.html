@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Graduation - Premium Edition 🎓</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght=500;700&family=Montserrat:wght=300;400;600&family=Great+Vibes&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #111b24 0%, #1a2a36 100%);
+            font-family: 'Montserrat', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        /* Pembungkus Utama (Mengunci posisi selalu di tengah layar monitor/HP) */
+        .wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 100%;
+            max-height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* ================= AMPLOP STYLE ================= */
+        .envelope-container {
+            position: absolute;
+            width: 320px;
+            height: 220px;
+            background: #1c2e3d;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            z-index: 10;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 160px solid transparent;
+            border-right: 160px solid transparent;
+            border-top: 120px solid #253a4d;
+            transform-origin: top;
+            transition: transform 0.6s ease, z-index 0.2s ease;
+            z-index: 12;
+        }
+
+        .envelope-front {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 160px solid #1f3547;
+            border-right: 160px solid #1f3547;
+            border-bottom: 110px solid #223b50;
+            bottom: 0;
+            left: 0;
+            z-index: 13;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .envelope-seal {
+            position: absolute;
+            top: 95px;
+            left: 135px;
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #ffe875 0%, #c59b27 100%);
+            border-radius: 50%;
+            z-index: 14;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #111;
+            font-size: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: opacity 0.4s ease;
+        }
+
+        /* Transisi Amplop Terbuka (Diturunkan sedikit ke bawah agar pas ruangannya) */
+        .wrapper.open .envelope-container {
+            transform: translateY(120px) scale(0.9);
+        }
+
+        .wrapper.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .wrapper.open .envelope-seal {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* ================= CARDS STYLE ================= */
+        .card-stack {
+            position: absolute;
+            width: 290px;
+            height: 380px;
+            z-index: 5;
+            opacity: 0;
+            /* Posisi awal kartu ngumpet di tengah dalam posisi kecil */
+            transform: translateY(0) scale(0.5);
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease;
+            pointer-events: none;
+        }
+
+        /* Kartu keluar melesat ke atas pas terbuka */
+        .wrapper.open .card-stack {
+            opacity: 1;
+            transform: translateY(-70px) scale(1);
+            z-index: 20;
+            pointer-events: auto;
+        }
+
+        .content-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), opacity 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 4px double #d4af37;
+            touch-action: none;
+        }
+
+        /* Tampilan Surat */
+        .letter-card {
+            background: #fdfbf7;
+            text-align: center;
+        }
+
+        .letter-card h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 20px;
+            color: #1a2a36;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #d4af37;
+            padding-bottom: 5px;
+        }
+
+        .letter-card h2 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 28px;
+            color: #c59b27;
+            margin-bottom: 15px;
+        }
+
+        .letter-card p {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        /* Tampilan Foto */
+        .photo-card {
+            background: #fff;
+        }
+
+        .photo-frame {
+            width: 100%;
+            height: 82%;
+            overflow: hidden;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-caption {
+            margin-top: 10px;
+            font-family: 'Cinzel', serif;
+            font-size: 14px;
+            color: #c59b27;
+            font-weight: bold;
+        }
+
+        /* Navigasi Hint */
+        .nav-hint {
+            font-size: 10px;
+            color: #aaa;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        /* Petunjuk Sentuh Amplop */
+        .click-hint {
+            position: absolute;
+            bottom: 12%;
+            width: 100%;
+            text-align: center;
+            color: #ffd700;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            animation: pulse 1.5s infinite;
+            opacity: 1;
+            z-index: 15;
+            pointer-events: none;
+            display: block;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        /* Musik Player */
+        .audio-control {
+            position: absolute;
+            bottom: 5%;
+            right: 20px;
+            width: 45px;
+            height: 45px;
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #d4af37;
+            cursor: pointer;
+            z-index: 101;
+            font-size: 16px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper" id="mainWrapper">
+        
+        <audio id="bgMusic" src="superpawer.mp3" loop></audio>
+        <div class="audio-control" id="audioBtn" onclick="toggleMusic()">🎵</div>
+
+        <div class="card-stack" id="cardStack">
+            
+            <div class="content-card letter-card">
+                <h1>this is your day!</h1>
+                <h2>Dear N</h2>
+                <p>ever since you started chasing your dreams, i knew you were destined for great things to be a light in the dark. i might not know exactly how big your goals are, but i promise to always have your back. i’ll be there to catch you if you fall, hold you up if you stumble, and be your home, even when the whole world is pushing against you 🎓✨</p>
+                <div class="nav-hint">
+                    <span></span> <span>Swipe right ➡️</span>
+                </div>
+            </div>
+
+            <div class="content-card photo-card">
+                <div class="photo-frame">
+                    <img src="real.jpg" alt="foto 1">
+                </div>
+                <p class="photo-caption">the most beautiful girl in the world!</p>
+                <div class="nav-hint">
+                    <span>⬅️ Back</span>
+                    <span>Next➡️</span>
+                </div>
+            </div>
+
+            <div class="content-card photo-card">
+                <div class="photo-frame">
+                    <img src="realistis.jpg" alt="Foto 2">
+                </div>
+                <p class="photo-caption">Proud of You 💖</p>
+                <div class="nav-hint">
+                    <span>⬅️ Back</span>
+                    <span>Next ➡️</span>
+                </div>
+            </div>
+
+            <div class="content-card photo-card">
+                <div class="photo-frame">
+                    <img src="cute.jpg" alt="Foto 3">
+                </div>
+                <p class="photo-caption">i love you! </p>
+                <div class="nav-hint">
+                    <span>⬅️ Back</span>
+                    <span>Close the latter ↩️</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="envelope-container" id="envelope" onclick="openEnvelope()">
+            <div class="envelope-flap"></div>
+            <div class="envelope-seal">🎓</div>
+            <div class="envelope-front"></div>
+        </div>
+        
+        <div class="click-hint" id="clickHint">Touch to Open ✨</div>
+
+    </div>
+
+    <script>
+        const wrapper = document.getElementById('mainWrapper');
+        const stack = document.getElementById('cardStack');
+        const cards = Array.from(stack.children);
+        const music = document.getElementById('bgMusic');
+        const audioBtn = document.getElementById('audioBtn');
+        const clickHint = document.getElementById('clickHint');
+        
+        let currentIndex = 0;
+        let isMusicPlaying = false;
+        
+        let isDragging = false;
+        let startX = 0;
+        let moveX = 0;
+
+        function updateStack() {
+            cards.forEach((card, index) => {
+                card.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2) , opacity 0.3s ease';
+                
+                if (index < currentIndex) {
+                    card.style.transform = 'translateX(200%) rotate(20deg)';
+                    card.style.opacity = '0';
+                    card.style.pointerEvents = 'none';
+                } else if (index === currentIndex) {
+                    card.style.transform = 'translateX(0) scale(1) rotate(0deg)';
+                    card.style.opacity = '1';
+                    card.style.pointerEvents = 'auto';
+                    card.style.zIndex = 100;
+                } else {
+                    const depth = index - currentIndex;
+                    card.style.transform = `translateY(${depth * 8}px) scale(${1 - depth * 0.04})`;
+                    card.style.opacity = depth === 1 ? '0.9' : '0';
+                    card.style.pointerEvents = 'none';
+                    card.style.zIndex = 100 - index;
+                }
+            });
+        }
+
+        updateStack();
+
+        function openEnvelope() {
+            if (!wrapper.classList.contains('open')) {
+                wrapper.classList.add('open');
+                clickHint.style.display = 'none';
+                
+                if (!isMusicPlaying) {
+                    music.play()
+                    .then(() => {
+                        isMusicPlaying = true;
+                        audioBtn.innerHTML = "⏸️";
+                    })
+                    .catch(e => {
+                        console.log("Autoplay diblokir Chrome, nunggu klik manual.");
+                    });
+                }
+            }
+        }
+
+        function next() {
+            if (currentIndex < cards.length - 1) {
+                currentIndex++;
+                updateStack();
+            } else {
+                closeAndReset();
+            }
+        }
+
+        function back() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateStack();
+            }
+        }
+
+        function closeAndReset() {
+            currentIndex = 0;
+            wrapper.classList.remove('open');
+            clickHint.style.display = 'block';
+            music.pause();
+            isMusicPlaying = false;
+            audioBtn.innerHTML = "🎵";
+            setTimeout(() => { updateStack(); }, 500);
+        }
+
+        cards.forEach(card => {
+            card.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                startX = e.touches[0].clientX;
+                moveX = 0; 
+                card.style.transition = 'none';
+            });
+
+            card.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                const currentX = e.touches[0].clientX;
+                moveX = currentX - startX;
+
+                if (moveX < 0 && currentIndex === 0) {
+                    card.style.transform = `translateX(${moveX * 0.15}px) rotate(${moveX * 0.02}deg)`;
+                } else {
+                    card.style.transform = `translateX(${moveX}px) rotate(${moveX * 0.05}deg)`;
+                }
+            });
+
+            card.addEventListener('touchend', (e) => {
+                if (!isDragging) return;
+                isDragging = false;
+                
+                const threshold = 100;
+
+                if (moveX > threshold) {
+                    next();
+                } else if (moveX < -threshold) {
+                    back();
+                } else {
+                    updateStack();
+                }
+            });
+        });
+
+        function toggleMusic() {
+            if (isMusicPlaying) {
+                music.pause();
+                audioBtn.innerHTML = "🎵";
+            } else {
+                music.play().then(() => {
+                    audioBtn.innerHTML = "⏸️";
+                }).catch(err => console.log("Gagal play:", err));
+            }
+            isMusicPlaying = !isMusicPlaying;
+        }
+    </script>
+
+</body>
+</html>
